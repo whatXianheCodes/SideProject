@@ -16,6 +16,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Blackjack"
+            android:label="@string/title_activity_blackjack"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sideproject.casinogames.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

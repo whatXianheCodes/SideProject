@@ -2,7 +2,9 @@
 <resources>
 
     <string name="app_name">CasinoGames</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="Blackjack_name">Blackjack</string>
+    <string name="title_activity_blackjack">Blackjack</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
