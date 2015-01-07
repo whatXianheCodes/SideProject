@@ -49,7 +49,15 @@ public class Card {
         return this.value;
     }
 
+    public void setValue(Cardvalue cardvalue){
+        this.value = cardvalue;
+    }
+
     public Suit getSuit() {
         return this.suit;
+    }
+
+    public void setSuit(Suit suit) {
+        this.suit = suit;
     }
 }

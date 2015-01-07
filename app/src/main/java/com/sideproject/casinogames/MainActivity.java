@@ -40,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void launchBlackjack (View view) {
-        Intent intent = new Intent(this, Blackjack.class);
+        Intent intent = new Intent(this, BlackjackActivity.class);
         startActivity(intent);
     }
 }

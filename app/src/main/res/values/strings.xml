@@ -6,6 +6,7 @@
     <string name="Blackjack_name">Blackjack</string>
     <string name="title_activity_blackjack">Blackjack</string>
     <string name="hello_world">Hello world!</string>
-    <string name="suffle">Suffle!</string>
+    <string name="hit">Hit</string>
+    <string name="stand">Stand</string>
 
 </resources>

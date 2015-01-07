@@ -46,7 +46,7 @@ public class Deck {
 
     public void printDeck () {
         for (Card card: deck) {
-            Log.d(TAG, card.getValue() + " of " + card.getSuit() + " size ");
+            Log.d(TAG, card.getValue() + " of " + card.getSuit());
         }
     }
 
