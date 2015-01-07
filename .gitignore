@@ -1,0 +1,20 @@
+.gradle
+*.iml
+/local.properties
+/.idea/workspace.xml
+.DS_Store
+/build
+.idea
+
+#Android (https://github.com/github/gitignore/blob/master/Android.gitignore)
+*.apk
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+.gradle/
+build/
+local.properties
+proguard/
+*.log
