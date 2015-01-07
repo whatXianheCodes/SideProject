@@ -20,12 +20,14 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true">
         <Button
+            android:id="@+id/hit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/hit"
             android:onClick="hit"
             android:layout_weight="1"/>
         <Button
+            android:id="@+id/stand"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/stand"

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -51,29 +52,29 @@ public class BlackjackActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private int endTurn() {
+    private int calculatePoints() {
         int numberofAce = 0;
-        int totalScore = 0;
+        int totalPoints = 0;
         for (Card card: hand) {
             if (card.getValue().getCardValue() == 1) {
                 numberofAce++;
             }
             else if( card.getValue().getCardValue() > 10) {
-                totalScore += 10;
+                totalPoints += 10;
             }
             else {
-                totalScore += card.getValue().getCardValue();
+                totalPoints += card.getValue().getCardValue();
             }
         }
         for (int i = 0; i < numberofAce; i++) {
-            if ((totalScore + 11) > 21) {
-                totalScore +=1;
+            if ((totalPoints + 11) > 21) {
+                totalPoints +=1;
             }
             else {
-                totalScore +=11;
+                totalPoints +=11;
             }
         }
-        return totalScore;
+        return totalPoints;
     }
 
     private void displayToastMessage (String message) {
@@ -88,13 +89,15 @@ public class BlackjackActivity extends ActionBarActivity {
     }
 
     public void stand (View view) {
-        int finalScore = endTurn();
+        int finalScore = calculatePoints();
         if (finalScore > 21) {
             displayToastMessage("You went over 21");
         }
         else {
             displayToastMessage("Your score is " + finalScore);
         }
+        ((Button) findViewById(R.id.hit)).setEnabled(false);
+        ((Button) findViewById(R.id.stand)).setEnabled(false);
     }
 
     public void hit (View view) {
