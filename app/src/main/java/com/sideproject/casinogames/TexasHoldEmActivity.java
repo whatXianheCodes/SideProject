@@ -72,16 +72,16 @@ public class TexasHoldEmActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void sortCommunityCard () {
-        Collections.sort(communityCard);
-        for (Card card: communityCard) {
-            Log.d(TAG, card.getValue() + " of " + card.getSuit());
-        }
-    }
 
     private void determinePokerHand () {
-        sortCommunityCard();
+        int pairs = 0;
+        int triples = 0;
+        List<Card> resultCards = new ArrayList<Card>();
+        resultCards.addAll(communityCard);
+        resultCards.addAll(hand);
+        Collections.sort(resultCards);
     }
+
 
     private void drawCard (Card card) {
         TextView textView = new TextView(this);
