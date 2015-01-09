@@ -43,4 +43,9 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent(this, BlackjackActivity.class);
         startActivity(intent);
     }
+
+    public void launchTexasHoldEm (View view) {
+        Intent intent = new Intent(this, TexasHoldEmActivity.class);
+        startActivity(intent);
+    }
 }

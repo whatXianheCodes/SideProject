@@ -1,9 +1,11 @@
 package com.sideproject.casinogames;
 
+import java.util.Comparator;
+
 /**
  * Created by Xianhe on 1/7/2015.
  */
-public class Card {
+public class Card implements Comparable<Card> {
     private Cardvalue value;
     private Suit suit;
 
@@ -59,5 +61,9 @@ public class Card {
 
     public void setSuit(Suit suit) {
         this.suit = suit;
+    }
+
+    public int compareTo (Card card) {
+       return this.getValue().getCardValue() - card.getValue().getCardValue();
     }
 }

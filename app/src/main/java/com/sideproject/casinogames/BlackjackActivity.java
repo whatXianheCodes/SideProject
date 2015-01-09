@@ -82,7 +82,7 @@ public class BlackjackActivity extends ActionBarActivity {
         toast.show();
     }
 
-    public void drawHand (Card card) {
+    public void drawCard (Card card) {
         TextView textView = new TextView(this);
         textView.setText(card.getValue() + " of " + card.getSuit());
         ((LinearLayout) findViewById(R.id.hand)).addView(textView);
@@ -103,6 +103,6 @@ public class BlackjackActivity extends ActionBarActivity {
     public void hit (View view) {
         Card cardDrawn = deck.randomizedDraw();
         hand.add(cardDrawn);
-        drawHand(cardDrawn);
+        drawCard(cardDrawn);
     }
 }

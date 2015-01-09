@@ -24,6 +24,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sideproject.casinogames.MainActivity" />
         </activity>
+        <activity
+            android:name=".TexasHoldEmActivity"
+            android:label="@string/title_activity_texas_hold_em"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sideproject.casinogames.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

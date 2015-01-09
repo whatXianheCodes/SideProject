@@ -9,7 +9,13 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/Blackjack_name"
+        android:text="@string/title_activity_blackjack"
         android:onClick="launchBlackjack"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_activity_texas_hold_em"
+        android:onClick="launchTexasHoldEm"/>
 
 </LinearLayout>
