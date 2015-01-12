@@ -24,7 +24,7 @@ public class Card implements Comparable<Card> {
         QUEEN(12),
         KING(13);
 
-        private final int value;
+        private int value;
 
         Cardvalue(int value) {
             this.value = value;
@@ -33,13 +33,27 @@ public class Card implements Comparable<Card> {
         public int getCardValue() {
             return value;
         }
+
+        public void setCardValue(int value) {
+            this.value = value;
+        }
     }
 
     public enum Suit {
-        HEARTS,
-        SPADES,
-        CLUBS,
-        DIAMONDS;
+        HEARTS(0),
+        SPADES(1),
+        CLUBS(2),
+        DIAMONDS(3);
+
+        private final int value;
+
+        Suit(int value) {
+            this.value = value;
+        }
+
+        public int getSuitValue () {
+            return value;
+        }
     }
 
     public Card (Cardvalue value, Suit suit) {
