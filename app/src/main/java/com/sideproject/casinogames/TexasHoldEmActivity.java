@@ -22,6 +22,7 @@ public class TexasHoldEmActivity extends ActionBarActivity {
     private static final String TAG = "TexasHoldEmActivity";
     private List<Card> hand = new ArrayList<Card>();
     private List<Card> communityCard = new ArrayList<Card>();
+    List<Card> resultCards = new ArrayList<Card>();
 
     private final int START_HAND_SIZE = 2;
     private final int START_COMMUNITY_CARD_SIZE = 3;
@@ -29,14 +30,22 @@ public class TexasHoldEmActivity extends ActionBarActivity {
     private List<Integer> pairs = new ArrayList<Integer>();
     private List<Integer> triples = new ArrayList<Integer>();
     private int[] suits = {0, 0, 0, 0};
-    private int straightCount = 0;
+    private int straightCount = 1;
+    private int aceCount = 0;
+    private boolean isFlush = false;
+    private int duplicateCounter = 0;
 
     private int straightHigh = 0;
     private int fourOfAKind = 0;
-    private int single = 0;
+    private int singleHigh = -1;
     private int flushHigh = 0;
-    private int aceCount = 0;
-    private boolean isFlush = false;
+    private int firstKicker = 0;
+    private int secondKicker = 0;
+    private int thirdKicker = 0;
+    int pairHigh = 0;
+    int pairLow = 0;
+    int tripleHigh = 0;
+
 
 
     private void startGame() {
@@ -59,7 +68,7 @@ public class TexasHoldEmActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_texas_hold_em);
-        startGame();
+        //startGame();
     }
 
 
@@ -97,6 +106,7 @@ public class TexasHoldEmActivity extends ActionBarActivity {
                         flushHigh = card.getValue().getCardValue();
                     }
                     isFlush = true;
+                    Log.d(TAG, card.getSuit().toString());
                 }
             }
         }
@@ -118,6 +128,7 @@ public class TexasHoldEmActivity extends ActionBarActivity {
             if (cardValue == pair) {
                 pair = 0;
                 triples.add(cardValue);
+                Log.d(TAG, "triples with " + cardValue);
                 return true;
             }
         }
@@ -134,32 +145,83 @@ public class TexasHoldEmActivity extends ActionBarActivity {
 
     private void countStraight(Card card, int lastCard) {
         int cardValue = card.getValue().getCardValue();
-
         if (cardValue == 1) {
             aceCount++;
         }
-        if (cardValue - single == 1) {
+        if (cardValue - singleHigh == 1) {
             straightCount++;
             if (straightCount >= 5) {
                 straightHigh = cardValue;
             }
-        } else {
-            straightCount = 0;
         }
-        if (lastCard == 13 && aceCount > 0 && straightCount >= 4) {
+        else if (lastCard == 13 && aceCount > 0 && straightCount >= 4) {
             straightCount++;
             straightHigh = 14;
         }
+        else if (cardValue - singleHigh != 0) {
+            straightCount = 1;
+        }
     }
 
-    private String determineRank(boolean isPair, boolean isTriple, boolean isFourOfKind) {
-        int pairHigh = 0;
-        int pairLow = 0;
-        int tripleHigh = 0;
-        int kicker = single;
+    private void findDuplicate (int cardValue, int lastCard) {
+        if (cardValue == lastCard) {
+            duplicateCounter++;
+        }
+        else if (duplicateCounter == 2) {
+            if (cardValue > pairHigh) {
+                pairLow = pairHigh;
+                pairHigh = cardValue;
+            } else if (cardValue > pairLow) {
+                pairLow = cardValue;
+            }
+        }
+        else if (duplicateCounter == 3) {
+            tripleHigh = cardValue;
+        }
+        else if (duplicateCounter == 4) {
+            fourOfAKind = cardValue;
+        }
+        duplicateCounter = 0;
+    }
+
+    private void findKicker () {
+        int cardValue;
+        for (Card card : resultCards) {
+            cardValue = card.getValue().getCardValue();
+            if (tripleHigh != 0 && cardValue != tripleHigh) {
+                if (cardValue > firstKicker) {
+                    secondKicker = firstKicker;
+                    firstKicker = cardValue;
+                }
+                else if (cardValue > secondKicker) {
+                    secondKicker = cardValue;
+                }
+            } else if (pairHigh != 0 && pairLow != 0
+                    && cardValue != pairHigh && cardValue != pairLow) {
+                if (cardValue > firstKicker) {
+                    firstKicker = cardValue;
+                }
+            } else if (pairHigh != 0) {
+                if (cardValue > firstKicker) {
+                    thirdKicker = secondKicker;
+                    secondKicker = firstKicker;
+                    firstKicker = cardValue;
+                }
+                else if (cardValue > secondKicker) {
+                    thirdKicker = secondKicker;
+                    secondKicker = cardValue;
+                }
+                else if (cardValue > thirdKicker) {
+                    firstKicker = cardValue;
+                }
+            }
+        }
+    }
+
+    private String determineRank() {
 
         if (aceCount == 1) {
-            single = 14;
+            singleHigh = 14;
         } else if (aceCount == 2) {
             pairHigh = 14;
         } else if (aceCount == 3) {
@@ -168,72 +230,69 @@ public class TexasHoldEmActivity extends ActionBarActivity {
             fourOfAKind = 14;
         }
 
-        for (Integer pair : pairs) {
-            if (pair > pairHigh) {
-                pairLow = pairHigh;
-                pairHigh = pair;
-            } else if (pair > pairLow) {
-                pairLow = pair;
-            }
-        }
-        for (Integer triple : triples) {
-            if (triple > tripleHigh) {
-                tripleHigh = triple;
-            }
-        }
-
-        if (straightCount == 5 && isFlush) {
+        if (straightHigh != 0 && isFlush) {
             if (straightHigh == 14) {
                 return "Royal flush";
             } else {
                 return "Straight Flush with high card " + straightHigh;
             }
-        } else if (isTriple && isPair) {
+        } else if (tripleHigh != 0 && pairHigh != 0) {
             return "Full house " + tripleHigh + " with " + pairHigh;
-        } else if (isFourOfKind) {
+        } else if (fourOfAKind != 0) {
             return "Four of a kind " + fourOfAKind;
         } else if (isFlush) {
             return "Flush with high card " + flushHigh;
-        } else if (straightCount == 5) {
+        } else if (straightHigh != 0) {
             return "Straight with high card " + straightHigh;
-        } else if (isTriple) {
-            return "Three of kind " + tripleHigh;
-        } else if (isPair && pairLow != 0 && pairHigh != 0) {
-            return "Two pair with high pair " + pairHigh + " low pair " + pairLow + "and single " + single;
-        } else if (isPair) {
-            return "Pair " + pairHigh + "with kicker " + single;
+        } else if (tripleHigh != 0) {
+            return "Three of kind " + tripleHigh + "first kicker " + firstKicker + " second kicker " + secondKicker;
+        } else if (pairHigh != 0 && pairLow != 0) {
+            return "Two pair with high pair " + pairHigh + " low pair " + pairLow + " and kicker " + firstKicker;
+        } else if (pairHigh != 0) {
+            return "Pair " + pairHigh + "first kicker " + firstKicker + " second kicker " + secondKicker + " third kicker " + thirdKicker;
         } else {
-            return "High card " + single;
+            return "High card " + singleHigh;
         }
     }
 
     private String determinePokerHand() {
 
         int lastCard = -1;
-        int cardValue = 0;
-        boolean isTriple = false;
-        boolean isFourOfKind = false;
-        boolean isPair = false;
+        int cardValue = -1;
+        int kicker = 0;
 
         List<Card> resultCards = new ArrayList<Card>();
-        resultCards.addAll(communityCard);
-        resultCards.addAll(hand);
-        Collections.sort(resultCards);
+//        resultCards.addAll(communityCard);
+//        resultCards.addAll(hand);
+//        Collections.sort(resultCards);
+        Card card1 = new Card (Card.Cardvalue.TWO, Card.Suit.SPADES);
+        resultCards.add(card1);
+        Card card2 = new Card (Card.Cardvalue.TWO, Card.Suit.HEARTS);
+        resultCards.add(card2);
+        Card card3 = new Card (Card.Cardvalue.TWO, Card.Suit.HEARTS);
+        resultCards.add(card3);
+        Card card4 = new Card (Card.Cardvalue.JACK, Card.Suit.SPADES);
+        resultCards.add(card4);
+        Card card5 = new Card (Card.Cardvalue.QUEEN, Card.Suit.DIAMONDS);
+        resultCards.add(card5);
+        Card card6 = new Card (Card.Cardvalue.KING, Card.Suit.SPADES);
+        resultCards.add(card6);
+        Card card7 = new Card (Card.Cardvalue.KING, Card.Suit.SPADES);
+        resultCards.add(card7);
 
         for (Card card : resultCards) {
             cardValue = card.getValue().getCardValue();
             countStraight(card, lastCard);
             countSuit(card);
-            isFourOfKind = findFourOfKind(cardValue);
-            isTriple = findTriples(cardValue);
-            isPair = findPairs(cardValue, lastCard, isTriple, isFourOfKind);
-            if (!isFourOfKind && !isTriple && !isPair) {
-                single = cardValue;
+            findDuplicate(cardValue, lastCard);
+
+            if (pairHigh != 0 && tripleHigh != 0 && fourOfAKind!= 0) {
+                singleHigh = cardValue;
             }
             lastCard = cardValue;
         }
-
-        return determineRank(isPair, isTriple, isFourOfKind);
+        findKicker();
+        return determineRank();
     }
 
 
@@ -258,16 +317,19 @@ public class TexasHoldEmActivity extends ActionBarActivity {
     }
 
     public void check(View view) {
-        if (communityCard.size() < 5) {
-            Card cardDrawn = deck.randomizedDraw();
-            communityCard.add(cardDrawn);
-            drawCard(cardDrawn);
-        } else {
-            determinePokerHand();
-            ((Button) findViewById(R.id.check)).setEnabled(false);
-            ((Button) findViewById(R.id.bet)).setEnabled(false);
-            ((Button) findViewById(R.id.fold)).setEnabled(false);
-        }
+        Log.d(TAG, determinePokerHand());
+        //determinePokerHand();
+        resultCards.clear();
+//        if (communityCard.size() < 5) {
+//            Card cardDrawn = deck.randomizedDraw();
+//            communityCard.add(cardDrawn);
+//            drawCard(cardDrawn);
+//        } else {
+//            determinePokerHand();
+//            ((Button) findViewById(R.id.check)).setEnabled(false);
+//            ((Button) findViewById(R.id.bet)).setEnabled(false);
+//            ((Button) findViewById(R.id.fold)).setEnabled(false);
+//        }
     }
 
     public void fold(View view) {
