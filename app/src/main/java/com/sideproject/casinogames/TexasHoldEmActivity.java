@@ -91,7 +91,6 @@ public class TexasHoldEmActivity extends ActionBarActivity {
             communityCard.add(cardDrawn);
             drawCard(cardDrawn);
         }
-        texasHoldEm = new TexasHoldEm(communityCard, hand);
     }
 
     private void newGame() {
@@ -107,17 +106,17 @@ public class TexasHoldEmActivity extends ActionBarActivity {
     }
 
     public void check(View view) {
-        Log.d(TAG, texasHoldEm.determinePokerHand());
-//        if (communityCard.size() < 5) {
-//            Card cardDrawn = deck.randomizedDraw();
-//            communityCard.add(cardDrawn);
-//            drawCard(cardDrawn);
-//        } else {
-//            determinePokerHand();
-//            ((Button) findViewById(R.id.check)).setEnabled(false);
-//            ((Button) findViewById(R.id.bet)).setEnabled(false);
-//            ((Button) findViewById(R.id.fold)).setEnabled(false);
-//        }
+        if (communityCard.size() < 5) {
+            Card cardDrawn = deck.randomizedDraw();
+            communityCard.add(cardDrawn);
+            drawCard(cardDrawn);
+        } else {
+            texasHoldEm = new TexasHoldEm(communityCard, hand);
+            Log.d(TAG, texasHoldEm.determinePokerHand());
+            ((Button) findViewById(R.id.check)).setEnabled(false);
+            ((Button) findViewById(R.id.bet)).setEnabled(false);
+            ((Button) findViewById(R.id.fold)).setEnabled(false);
+        }
     }
 
     public void fold(View view) {

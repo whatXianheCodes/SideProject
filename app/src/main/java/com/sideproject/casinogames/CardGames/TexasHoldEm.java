@@ -35,19 +35,19 @@ public class TexasHoldEm {
     private Card.Suit flushSuit = null;
 
     private void createCustomCard () {
-        Card card1 = new Card (Card.Cardvalue.ACE, Card.Suit.HEARTS);
+        Card card1 = new Card (Card.Cardvalue.TWO, Card.Suit.HEARTS);
         resultCards.add(card1);
-        Card card2 = new Card (Card.Cardvalue.TWO, Card.Suit.HEARTS);
+        Card card2 = new Card (Card.Cardvalue.JACK, Card.Suit.HEARTS);
         resultCards.add(card2);
-        Card card3 = new Card (Card.Cardvalue.THREE, Card.Suit.HEARTS);
+        Card card3 = new Card (Card.Cardvalue.KING, Card.Suit.DIAMONDS);
         resultCards.add(card3);
-        Card card4 = new Card (Card.Cardvalue.FOUR, Card.Suit.HEARTS);
+        Card card4 = new Card (Card.Cardvalue.FOUR, Card.Suit.DIAMONDS);
         resultCards.add(card4);
-        Card card5 = new Card (Card.Cardvalue.FIVE, Card.Suit.HEARTS);
+        Card card5 = new Card (Card.Cardvalue.FOUR, Card.Suit.HEARTS);
         resultCards.add(card5);
         Card card6 = new Card (Card.Cardvalue.FIVE, Card.Suit.HEARTS);
         resultCards.add(card6);
-        Card card7 = new Card (Card.Cardvalue.KING, Card.Suit.DIAMONDS);
+        Card card7 = new Card (Card.Cardvalue.SIX, Card.Suit.DIAMONDS);
         resultCards.add(card7);
     }
 
@@ -73,11 +73,10 @@ public class TexasHoldEm {
     }
 
     public TexasHoldEm(List<Card> communityCard, List<Card> hand) {
-//        resultCards.addAll(communityCard);
-//        resultCards.addAll(hand);
-
+        resultCards.addAll(communityCard);
+        resultCards.addAll(hand);
         //TODO: comment this out once testing is done
-        createCustomCard();
+        //createCustomCard();
         initializeGame ();
         Collections.sort(resultCards);
     }
@@ -184,39 +183,48 @@ public class TexasHoldEm {
     }
 
     private void findStraightFlush () {
-        // does not work
-        int[] straightFlush = {0, 0, 0, 0, 0, 0 , 0};
-        Card card;
-        int diff;
-        int count = 1;
-        for (int i = resultCards.size() -1; i >=0; i--) {
-            card = resultCards.get(i);
-            if(card.getSuit() == flushSuit) {
-                diff = flushHigh - card.getValue().getCardValue();
-                if (diff > 0 && diff < 7) {
-                    straightFlush[diff] = 1;
-                }
+        int lastCard = -1;
+        int cardValue;
+        int counter = 1;
+        int duplicateSuitCounter = 0;
+        boolean checkAce = false;
+        for (Card card: resultCards) {
+            cardValue = card.getValue().getCardValue();
+            if (cardValue != lastCard) {
+                duplicateSuitCounter = 0;
             }
-        }
-        for (int i = 0; i < 7; i++) {
-            if (straightFlush[i] == 1) {
-                count++;
+            else if (duplicateSuitCounter == 0) {
+                counter ++;
             }
-            else {
-                count = 1;
+            if (cardValue - lastCard == 1 && card.getSuit() == flushSuit) {
+                counter++;
+                duplicateSuitCounter ++;
             }
-            if (count >= 5) {
-                straightFlushHigh = straightHigh - 7 + i;
+            else if (cardValue - lastCard > 1){
+                counter = 1;
             }
+            if (counter >=5) {
+                straightFlushHigh = cardValue;
+            }
+            else if (counter == 4 && cardValue ==5) {
+                Log.d(TAG, "infoooooo");
+                checkAce = true;
+            }
+            else if (checkAce && cardValue == 14 && card.getSuit() == flushSuit) {
+                straightFlushHigh = 5;
+            }
+            lastCard = cardValue;
         }
     }
 
     private String determineRank() {
         if (straightHigh != 0 && flushHigh != 0) {
-            if (straightHigh == 14) {
+            findStraightFlush();
+            if (straightFlushHigh == 14) {
                 return "Royal flush";
-            } else {
-                return "Straight Flush with high card " + straightHigh;
+            }
+            else if (straightFlushHigh != 0) {
+                return "Straight Flush with high card " + straightFlushHigh;
             }
         }
         if (fourOfAKind != 0) {
