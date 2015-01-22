@@ -1,6 +1,8 @@
-package com.sideproject.casinogames;
+package com.sideproject.casinogames.CardGames;
 
 import android.util.Log;
+
+import com.sideproject.casinogames.CardGames.Card;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +53,7 @@ public class Deck {
     }
 
     public void newDeck () {
-        deck.removeAll(deck);
+        deck.clear();
         createDeck();
     }
 }

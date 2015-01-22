@@ -1,6 +1,4 @@
-package com.sideproject.casinogames;
-
-import java.util.Comparator;
+package com.sideproject.casinogames.CardGames;
 
 /**
  * Created by Xianhe on 1/7/2015.
