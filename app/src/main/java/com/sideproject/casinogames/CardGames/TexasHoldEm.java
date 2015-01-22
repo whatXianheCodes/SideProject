@@ -17,12 +17,9 @@ public class TexasHoldEm {
     private final int RESULT_CARD_SIZE = 7;
 
     private int[] suits = {0, 0, 0, 0};
-//    private int straightCount = 1;
     private int aceCount = 0;
-//    private int straightFlushCount = 1;
-//    private boolean possibleStraightFlush = false;
-//
-//    private int straightFlushHigh = 0;
+
+    private int straightFlushHigh = 0;
     private int straightHigh = 0;
     private int flushHigh = 0;
     private int firstHighest = 0;
@@ -38,19 +35,19 @@ public class TexasHoldEm {
     private Card.Suit flushSuit = null;
 
     private void createCustomCard () {
-        Card card1 = new Card (Card.Cardvalue.ACE, Card.Suit.DIAMONDS);
+        Card card1 = new Card (Card.Cardvalue.ACE, Card.Suit.HEARTS);
         resultCards.add(card1);
         Card card2 = new Card (Card.Cardvalue.TWO, Card.Suit.HEARTS);
         resultCards.add(card2);
-        Card card3 = new Card (Card.Cardvalue.SEVEN, Card.Suit.DIAMONDS);
+        Card card3 = new Card (Card.Cardvalue.THREE, Card.Suit.HEARTS);
         resultCards.add(card3);
-        Card card4 = new Card (Card.Cardvalue.TWO, Card.Suit.HEARTS);
+        Card card4 = new Card (Card.Cardvalue.FOUR, Card.Suit.HEARTS);
         resultCards.add(card4);
-        Card card5 = new Card (Card.Cardvalue.KING, Card.Suit.DIAMONDS);
+        Card card5 = new Card (Card.Cardvalue.FIVE, Card.Suit.HEARTS);
         resultCards.add(card5);
-        Card card6 = new Card (Card.Cardvalue.SEVEN, Card.Suit.HEARTS);
+        Card card6 = new Card (Card.Cardvalue.FIVE, Card.Suit.HEARTS);
         resultCards.add(card6);
-        Card card7 = new Card (Card.Cardvalue.ACE, Card.Suit.HEARTS);
+        Card card7 = new Card (Card.Cardvalue.KING, Card.Suit.DIAMONDS);
         resultCards.add(card7);
     }
 
@@ -131,44 +128,125 @@ public class TexasHoldEm {
         return duplicateCounter;
     }
 
-    private void kickerForPair () {
+    private void findHighCards (int cardValue) {
+        if (firstHighest == 0) {
+            firstHighest = cardValue;
+        }
+        else if (secondHighest == 0) {
+            secondHighest = cardValue;
+        }
+        else if (thirdHighest == 0) {
+            thirdHighest = cardValue;
+        }
+        else if (fourthHighest == 0) {
+            fourthHighest = cardValue;
+        }
+        else {
+            lowest = cardValue;
+        }
+    }
+
+    private void findKicker () {
         int cardValue;
-        for (Card card : resultCards) {
+        for (int i = resultCards.size()-1; i >= 0; i--) {
+            cardValue = resultCards.get(i).getValue().getCardValue();
+            if (fourOfAKind != 0) {
+                if (cardValue != fourOfAKind) {
+                    findHighCards(cardValue);
+                    if (firstHighest != 0) {
+                        return;
+                    }
+                }
+            }
+            else if (cardValue != pairLow && cardValue != pairHigh && cardValue != tripleHigh) {
+                findHighCards(cardValue);
+                if (lowest != 0) {
+                    return;
+                }
+            }
+        }
+    }
+
+    private void findFlushRanking () {
+        Card card;
+        int cardValue;
+        for (int i = resultCards.size()-1; i >= 0; i--) {
+            card = resultCards.get(i);
             cardValue = card.getValue().getCardValue();
-            if (card.getValue().getCardValue() != pairHigh) {
-                thirdHighest = secondHighest;
-                secondHighest = firstHighest;
-                firstHighest = cardValue;
+            // find kicker for triples
+            if (card.getSuit() == flushSuit ) {
+                findHighCards(cardValue);
+                if (lowest != 0) {
+                    return;
+                }
+            }
+        }
+    }
+
+    private void findStraightFlush () {
+        // does not work
+        int[] straightFlush = {0, 0, 0, 0, 0, 0 , 0};
+        Card card;
+        int diff;
+        int count = 1;
+        for (int i = resultCards.size() -1; i >=0; i--) {
+            card = resultCards.get(i);
+            if(card.getSuit() == flushSuit) {
+                diff = flushHigh - card.getValue().getCardValue();
+                if (diff > 0 && diff < 7) {
+                    straightFlush[diff] = 1;
+                }
+            }
+        }
+        for (int i = 0; i < 7; i++) {
+            if (straightFlush[i] == 1) {
+                count++;
+            }
+            else {
+                count = 1;
+            }
+            if (count >= 5) {
+                straightFlushHigh = straightHigh - 7 + i;
             }
         }
     }
 
     private String determineRank() {
-//        if (straightFlushHigh != 0) {
-//            if (straightHigh == 14) {
-//                return "Royal flush";
-//            } else {
-//                return "Straight Flush with high card " + straightHigh;
-//            }
-//        } else if (fourOfAKind != 0) {
-//            return "Four of a kind " + fourOfAKind + " with kicker " + firstKicker;
-//        } else if (tripleHigh != 0 && pairHigh != 0) {
-//            return "Full house " + tripleHigh + " with " + pairHigh;
-//        } else if (tripleHigh != 0 && tripleLow != 0) {
-//            return "Full house " + tripleHigh + " with " + tripleLow;
-//        } else if (flushHigh != 0) {
-//            return "Flush with high card " + flushHigh;
-//        } else if (straightHigh != 0) {
-//            return "Straight with high card " + straightHigh;
-//        } else if (tripleHigh != 0) {
-//            return "Three of kind " + tripleHigh + " first kicker " + firstKicker + " second kicker " + secondKicker;
-//        } else if (pairHigh != 0 && pairLow != 0) {
-//            return "Two pair with high pair " + pairHigh + " low pair " + pairLow ;//+ " and kicker " + firstKicker;
-//        } else
-          if (pairHigh != 0) {
-            return "Pair " + pairHigh + " first kicker " + firstHighest + " second kicker " + secondHighest + " third kicker " + thirdHighest;
+        if (straightHigh != 0 && flushHigh != 0) {
+            if (straightHigh == 14) {
+                return "Royal flush";
+            } else {
+                return "Straight Flush with high card " + straightHigh;
+            }
+        }
+        if (fourOfAKind != 0) {
+            if(aceCount > 4) {
+                firstHighest = 14;
+            }
+            return "Four of a kind " + fourOfAKind + " with kicker " + firstHighest;
+        } else if (tripleHigh != 0 && pairHigh != 0) {
+            return "Full house " + tripleHigh + " with " + pairHigh;
+        } else if (tripleHigh != 0 && tripleLow != 0) {
+            return "Full house " + tripleHigh + " with " + tripleLow;
+        } else if (flushHigh != 0) {
+            findFlushRanking();
+            return "Flush with high card " + firstHighest + " second kicker "
+                    + secondHighest + " third kicker " + thirdHighest + " fourth kicker "
+                    + fourthHighest + " fifth kicker " + lowest;
+        } else if (straightHigh != 0) {
+            return "Straight with high card " + straightHigh;
+        } else if (tripleHigh != 0) {
+            return "Three of kind " + tripleHigh + " first kicker " + firstHighest + " second kicker " + secondHighest;
+        } else
+        if (pairHigh != 0 && pairLow != 0) {
+            return "Two pair with high pair " + pairHigh + " low pair " + pairLow + " and kicker " + firstHighest;
+        } else if (pairHigh != 0) {
+              return "Pair " + pairHigh + " first kicker " + firstHighest + " second kicker "
+                    + secondHighest + " third kicker " + thirdHighest;
         } else {
-            return "High card ";
+              return "High card " + firstHighest + " second kicker "
+                    + secondHighest + " third kicker " + thirdHighest + " fourth kicker "
+                    + fourthHighest + " fifth kicker " + lowest;
         }
     }
 
@@ -193,7 +271,7 @@ public class TexasHoldEm {
             }
             lastCard = cardValue;
         }
-        //findKicker();
+        findKicker();
         return determineRank();
     }
 }
